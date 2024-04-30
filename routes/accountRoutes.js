@@ -1,23 +1,12 @@
 import express from 'express'
-import { getAccounts, getAccount, createAccount } from '../database.js';
+import { getAccs, getAcc, createAcc, updateAcc, deleteAcc } from '../controllers/accountController.js';
 
 const router = express.Router()
 
-
-router.get("/", async (req, res) => {
-    const accs = await getAccounts()
-    res.send(accs)
-})
-
-router.get("/:id", async (req, res) => {
-    const acc = await getAccount(req.params.id)
-    res.send(acc)
-})
-
-router.post("/", async (req, res) => {
-    const { name } = req.body
-    const account = await createAccount(name)
-    res.send(account)
-})
+router.route("/").get(getAccs)
+router.route("/").get(getAcc)
+router.route("/").post(createAcc)
+router.route("/").put(updateAcc)
+router.route("/").delete(deleteAcc)
 
 export default router
