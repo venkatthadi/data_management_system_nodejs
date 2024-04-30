@@ -48,6 +48,17 @@ export async function deleteUser(id){
     `, [id])
 }
 
+/*
+
+req.body - 
+{
+    "search" : "test",
+    "school_filter" : 1,
+    "usertype_filter" : 1
+}
+
+*/
+
 export async function searchUsers(search){
     const [rows] = await pool.query(`
     SELECT *
@@ -74,8 +85,7 @@ export async function filterUsers(search, school_filter, usertype_filter){
     }
     if(x > 0){
         query = query.slice(0, -4)
-    }
-    else{
+    } else {
         query = query.slice(0, -5)
     }
     const [rows] = await pool.query(query)

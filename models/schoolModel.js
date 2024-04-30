@@ -50,3 +50,33 @@ export async function deleteSchool(id){
     WHERE id = ?
     `, [id])
 }
+
+/*
+
+req.body - 
+{
+    "search" : "test",
+    "network_filter" : 1
+}
+
+*/
+
+export async function filterSchools(search, network_filter){
+    let query = "SELECT * FROM schools WHERE "
+    let x = 0
+    if(search) {
+        query += `name like "%${search}%" AND `
+        x++
+    }
+    if(network_filter) {
+        query += `network_id = '${network_filter}' AND `
+        x++
+    }
+    if(x > 0) {
+        query = query.slice(0, -4)
+    } else {
+        query = query.slice(0, -5)
+    }
+    const [rows] = await pool.query(query)
+    return rows
+}

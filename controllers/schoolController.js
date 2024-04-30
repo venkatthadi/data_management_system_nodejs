@@ -1,7 +1,14 @@
-import { getSchools, getSchool, createSchool, updateSchool, deleteSchool } from '../models/schoolModel.js';
+import { getSchools, getSchool, createSchool, updateSchool, deleteSchool, filterSchools } from '../models/schoolModel.js';
 
 export const getSchs = async (req, res) => {
-    const schs = await getSchools()
+    const { search, network_filter } = req.body
+    let schs
+    if(search || network_filter){
+        schs = await filterSchools(search, network_filter)
+    } else {
+        schs = await getSchools()
+    }
+    // const schs = await getSchools()
     res.status(200).send(schs)
 }
 
