@@ -3,6 +3,7 @@ import express from 'express'
 import accountRoutes from './routes/accountRoutes.js'
 import networkRoutes from './routes/networkRoutes.js'
 import schoolRoutes from './routes/schoolRoutes.js'
+import userTypeRoutes from './routes/userTypeRoutes.js'
 
 const app = express()
 
@@ -11,6 +12,7 @@ app.use(express.json())
 app.use("/accounts", accountRoutes)
 app.use("/networks", networkRoutes)
 app.use("/schools", schoolRoutes)
+app.use("/usertypes", userTypeRoutes)
 
 app.use((err, req, res, next) => {
     console.error(err.stack)
