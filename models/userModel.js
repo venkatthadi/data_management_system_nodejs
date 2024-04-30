@@ -47,3 +47,37 @@ export async function deleteUser(id){
     WHERE id = ?
     `, [id])
 }
+
+export async function searchUsers(search){
+    const [rows] = await pool.query(`
+    SELECT *
+    FROM users
+    WHERE name like "%${search}%"
+    `)
+    return rows
+}
+
+export async function filterUsers(search, school_filter, usertype_filter){
+    let query = "SELECT * FROM users WHERE "
+    let x = 0
+    if(search){
+        query += `name like "%${search}%" AND `
+        x++
+    }
+    if(school_filter){
+        query += `school_id = '${school_filter}' AND `
+        x++
+    }
+    if(usertype_filter){
+        query += `usertype_id = '${usertype_filter}' AND `
+        x++
+    }
+    if(x > 0){
+        query = query.slice(0, -4)
+    }
+    else{
+        query = query.slice(0, -5)
+    }
+    const [rows] = await pool.query(query)
+    return rows
+}

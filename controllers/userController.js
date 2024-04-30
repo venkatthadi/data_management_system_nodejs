@@ -1,7 +1,15 @@
-import { getUsers, getUser, createUser, updateUser, deleteUser } from '../models/userModel.js';
+import { getUsers, getUser, createUser, updateUser, deleteUser, searchUsers, filterUsers } from '../models/userModel.js';
 
 export const getUs = async (req, res) => {
-    const us = await getUsers()
+    const { search, school_filter, usertype_filter } = req.body
+    let us
+    if(school_filter || usertype_filter) {
+        us = await filterUsers(search, school_filter, usertype_filter)
+    } else if(search) {
+        us = await searchUsers(search)
+    } else {
+        us = await getUsers()
+    }
     res.status(200).send(us)
 }
 
