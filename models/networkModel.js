@@ -50,3 +50,23 @@ export async function deleteNetwork(id){
     WHERE id = ?
     `, [id])
 }
+
+export async function filterNetworks(search, account_filter){
+    let query = "SELECT * FROM networks WHERE "
+    let x = 0
+    if(search) {
+        query += `name like "%${search}%" AND `
+        x++
+    }
+    if(account_filter) {
+        query += `account_id = '${account_filter}' AND `
+        x++
+    }
+    if(x > 0) {
+        query = query.slice(0, -4)
+    } else {
+        query = query.slice(0, -5)
+    }
+    const [rows] = await pool.query(query)
+    return rows
+}

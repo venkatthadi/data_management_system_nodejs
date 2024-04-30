@@ -1,7 +1,13 @@
-import { getNetworks, getNetwork, createNetwork, updateNetwork, deleteNetwork } from '../models/networkModel.js';
+import { getNetworks, getNetwork, createNetwork, updateNetwork, deleteNetwork, filterNetworks } from '../models/networkModel.js';
 
 export const getNets = async (req, res) => {
-    const accs = await getNetworks()
+    const { search, account_filter } = req.body
+    let accs
+    if(search || account_filter) {
+        accs = await filterNetworks(search, account_filter)
+    } else {
+        accs = await getNetworks()
+    }
     res.status(200).send(accs)
 }
 
