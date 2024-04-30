@@ -3,10 +3,7 @@ import { getAccs, getAcc, createAcc, updateAcc, deleteAcc } from '../controllers
 
 const router = express.Router()
 
-router.route("/").get(getAccs)
-router.route("/").get(getAcc)
-router.route("/").post(createAcc)
-router.route("/").put(updateAcc)
-router.route("/").delete(deleteAcc)
+router.route("/").get(getAccs).post(createAcc)
+router.route("/:id").get(getAcc).put(updateAcc).delete(deleteAcc)
 
 export default router
