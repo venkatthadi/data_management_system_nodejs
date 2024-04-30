@@ -50,3 +50,12 @@ export async function deleteUserType(id){
     WHERE id = ?
     `, [id])
 }
+
+export async function searchUserTypes(search){
+    const [rows] = await pool.query(`
+    SELECT *
+    FROM usertypes
+    WHERE name like "%${search}%"
+    `)
+    return rows
+}

@@ -1,7 +1,13 @@
-import { getUserTypes, getUserType, createUserType, updateUserType, deleteUserType } from '../models/userTypeModel.js';
+import { getUserTypes, getUserType, createUserType, updateUserType, deleteUserType, searchUserTypes } from '../models/userTypeModel.js';
 
 export const getUTs = async (req, res) => {
-    const uts = await getUserTypes()
+    const { search } = req.body
+    let uts 
+    if(search){
+        uts = await searchUserTypes(search)
+    } else {
+        uts = await getUserTypes()
+    }
     res.status(200).send(uts)
 }
 
