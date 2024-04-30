@@ -50,3 +50,12 @@ export async function deleteAccount(id){
     WHERE id = ?
     `, [id])
 }
+
+export async function searchAccount(search){
+    const [rows] = await pool.query(`
+    SELECT *
+    FROM accounts
+    WHERE name like '%${search}%'
+    `)
+    return rows
+}

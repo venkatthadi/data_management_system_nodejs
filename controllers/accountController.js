@@ -1,7 +1,13 @@
-import { getAccounts, getAccount, createAccount, updateAccount, deleteAccount } from '../models/accountModel.js';
+import { getAccounts, getAccount, createAccount, updateAccount, deleteAccount, searchAccount } from '../models/accountModel.js';
 
 export const getAccs = async (req, res) => {
-    const accs = await getAccounts()
+    const { search } = req.body
+    let accs
+    if(search) {
+        accs = await searchAccount(search)
+    } else {
+        accs = await getAccounts()
+    }
     res.status(200).send(accs)
 }
 
