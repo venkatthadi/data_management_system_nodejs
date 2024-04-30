@@ -32,4 +32,21 @@ export async function createAccount(name){
     return getAccount(id)
 }
 
-export async function 
+export async function updateAccount(id, name){
+    await pool.query(`
+    UPDATE accounts
+    SET name = ?
+    WHERE id = ?
+    `, [name, id])
+    return getAccount(id)
+}
+
+// const acc = await updateAccount("4", "Account4")
+// console.log(acc)
+
+export async function deleteAccount(id){
+    await pool.query(`
+    DELETE FROM accounts
+    WHERE id = ?
+    `, [id])
+}
