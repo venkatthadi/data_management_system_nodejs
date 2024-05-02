@@ -20,7 +20,7 @@ export async function getNetwork(id) {
     FROM networks
     WHERE id = ? 
     `, [id])
-    return rows
+    return rows[0]
 }
 
 export async function createNetwork(name, account_id){
