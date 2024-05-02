@@ -4,9 +4,9 @@ export const getAccs = async (req, res) => {
     try {
         const { search } = req.body
         let accs
-        if(search) {
+        if(search) { // if there is anything to search
             accs = await searchAccount(search)
-        } else {
+        } else { // get all accounts from the database
             accs = await getAccounts()
         }
         res.status(200).json({
@@ -24,7 +24,7 @@ export const getAccs = async (req, res) => {
 export const getAcc = async (req, res) => {
     try {
         const acc = await getAccount(req.params.id)
-        if(acc){    
+        if(acc) { // if database returns a record
             res.status(200).json({
                 "response" : acc,
                 "message" : "success",
@@ -46,7 +46,7 @@ export const createAcc = async (req, res) => {
     try {    
         const { name } = req.body
         const account = await createAccount(name)
-        if(account){
+        if(account) { // if new account is created
             res.status(201).json({
                 "response" : account,
                 "message" : "Account created successfully",
@@ -70,7 +70,7 @@ export const updateAcc = async (req, res) => {
         const id = req.params.id
         const { name } = req.body
         const account = await updateAccount(id, name)
-        if(!account){
+        if(!account) { // if there is no account on that id
             res.status(406).json({
                 "message" : "cannot update account"
             })
