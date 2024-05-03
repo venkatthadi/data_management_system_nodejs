@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import express from 'express'
 import dotenv from 'dotenv'
 dotenv.config()
+import { validationResult } from 'express-validator'
 import { getAuthUsers, createAuth, fetchAuth } from "../models/authModel.js"
 
 const app = express()
@@ -32,21 +33,27 @@ export const getAuths = async (req, res) => {
 export const createAu = async (req, res) => {
     try {
         const { username, password } = req.body
-        const hashedPassword = await bcrypt.hash(password, 10)
-        console.log(hashedPassword)
-        const user = createAuth(username, hashedPassword)
-        if(user) {
-            res.status(201).json({
-                "response" : user,
-                "message" : "create successful",
-                "flag" : true
+        const errors = validationResult(req)
+        if(!errors.isEmpty()){
+            res.json({
+                "response" : errors
             })
         } else {
-            res.status(400).json({
-                "message" : "cannot create user"
-            })
+            const hashedPassword = await bcrypt.hash(password, 10)
+            console.log(hashedPassword)
+            const user = createAuth(username, hashedPassword)
+            if(user) {
+                res.status(201).json({
+                    "response" : user,
+                    "message" : "create successful",
+                    "flag" : true
+                })
+            } else {
+                res.status(400).json({
+                    "message" : "cannot create user"
+                })
+            }
         }
-        
     } catch {
         res.status(500).json({
             "message" : "internal server error"
