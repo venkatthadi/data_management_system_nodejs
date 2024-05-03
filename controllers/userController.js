@@ -1,3 +1,4 @@
+import { validationResult } from 'express-validator';
 import { getUsers, getUser, createUser, updateUser, deleteUser, searchUsers, filterUsers } from '../models/userModel.js';
 
 export const getUs = async (req, res) => {
@@ -47,19 +48,25 @@ export const getU = async (req, res) => {
 export const createU = async (req, res) => {
     try {    
         const { name, school_id, usertype_id } = req.body
-        const User = await createUser(name, school_id, usertype_id)
-        if(User){
-            res.status(201).json({
-                "response" : User,
-                "message" : "User created successfully",
-                "flag" : true
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) {
+            res.json({
+                "response" : errors
             })
         } else {
-            res.status(400).json({
-                "response" : "cannot create user"
-            })
+            const User = await createUser(name, school_id, usertype_id)
+            if(User){
+                res.status(201).json({
+                    "response" : User,
+                    "message" : "User created successfully",
+                    "flag" : true
+                })
+            } else {
+                res.status(400).json({
+                    "response" : "cannot create user"
+                })
+            }
         }
-        
     } catch(err) {
         res.status(500).json({
             "message" : err.message
@@ -71,16 +78,23 @@ export const updateU = async (req, res) => {
     try {    
         const id = req.params.id
         const { name, school_id, usertype_id } = req.body
-        const User = await updateUser(id, name, school_id, usertype_id)
-        if(!User){
-            res.status(406).json({
-                "message" : "cannot update user"
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) {
+            res.json({
+                "response" : errors
             })
         } else {
-            res.status(200).json({
-                "response" : network,
-                "message" : "update successful"
-            })
+            const User = await updateUser(id, name, school_id, usertype_id)
+            if(!User){
+                res.status(406).json({
+                    "message" : "cannot update user"
+                })
+            } else {
+                res.status(200).json({
+                    "response" : network,
+                    "message" : "update successful"
+                })
+            }
         }
     } catch(err) {
         res.status(500).json({
