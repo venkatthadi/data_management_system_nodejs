@@ -15,7 +15,7 @@ export async function getAuthUsers(username) {
     FROM authusers
     WHERE username = ?
     `, [username])
-    return rows
+    return rows[0]
 }
 
 // export async function getAuthUser(username){

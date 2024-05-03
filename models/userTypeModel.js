@@ -20,7 +20,7 @@ export async function getUserType(id) {
     FROM usertypes
     WHERE id = ? 
     `, [id])
-    return rows
+    return rows[0]
 }
 
 export async function createUserType(name){

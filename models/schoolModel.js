@@ -20,7 +20,7 @@ export async function getSchool(id) {
     FROM schools
     WHERE id = ? 
     `, [id])
-    return rows
+    return rows[0]
 }
 
 export async function createSchool(name, network_id){

@@ -20,7 +20,7 @@ export async function getUser(id) {
     FROM users
     WHERE id = ? 
     `, [id])
-    return rows
+    return rows[0]
 }
 
 export async function createUser(name, school_id, usertype_id){

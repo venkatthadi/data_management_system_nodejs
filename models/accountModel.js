@@ -20,7 +20,7 @@ export async function getAccount(id) {
     FROM accounts
     WHERE id = ? 
     `, [id])
-    return rows
+    return rows[0]
 }
 
 export async function createAccount(name){
