@@ -1,3 +1,4 @@
+import { validationResult } from 'express-validator';
 import { getUserTypes, getUserType, createUserType, updateUserType, deleteUserType, searchUserTypes } from '../models/userTypeModel.js';
 
 export const getUTs = async (req, res) => {
@@ -45,19 +46,25 @@ export const getUT = async (req, res) => {
 export const createUT = async (req, res) => {
     try {    
         const { name } = req.body
-        const UserType = await createUserType(name)
-        if(UserType){
-            res.status(201).json({
-                "response" : UserType,
-                "message" : "Network created successfully",
-                "flag" : true
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) {
+            res.json({
+                "response" : errors
             })
         } else {
-            res.status(400).json({
-                "response" : "cannot create network"
-            })
+            const UserType = await createUserType(name)
+            if(UserType){
+                res.status(201).json({
+                    "response" : UserType,
+                    "message" : "Network created successfully",
+                    "flag" : true
+                })
+            } else {
+                res.status(400).json({
+                    "response" : "cannot create network"
+                })
+            }
         }
-        
     } catch(err) {
         res.status(500).json({
             "message" : err.message
@@ -69,16 +76,23 @@ export const updateUT = async (req, res) => {
     try {    
         const id = req.params.id
         const { name } = req.body
-        const UserType = await updateUserType(id, name)
-        if(!UserType){
-            res.status(406).json({
-                "message" : "cannot update usertype"
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) {
+            res.json({
+                "response" : errors
             })
         } else {
-            res.status(200).json({
-                "response" : UserType,
-                "message" : "update successful"
-            })
+            const UserType = await updateUserType(id, name)
+            if(!UserType){
+                res.status(406).json({
+                    "message" : "cannot update usertype"
+                })
+            } else {
+                res.status(200).json({
+                    "response" : UserType,
+                    "message" : "update successful"
+                })
+            }
         }
     } catch(err) {
         res.status(500).json({
