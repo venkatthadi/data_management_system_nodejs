@@ -1,5 +1,4 @@
 import express from 'express'
-import jwt from 'jsonwebtoken'
 // import dotnet from 'dotent'
 import accountRoutes from './routes/accountRoutes.js'
 import networkRoutes from './routes/networkRoutes.js'
@@ -17,6 +16,10 @@ app.use(express.json())
 // app.get('/auth', (req, res) => {
 //     res.json(users)
 // })
+
+app.get("/", (req, res) => {
+    res.status(200).send("Home page")
+})
 
 app.use("/accounts", accountRoutes)
 app.use("/networks", networkRoutes)

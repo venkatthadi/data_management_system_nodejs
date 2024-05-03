@@ -7,6 +7,9 @@ router.use(express.json())
 
 router.route('/').get(authenticateToken, getAuths).post(createAu)
 router.route('/login').post(fetchAu)
+router.route('/logout').get((req, res) => { // get back to homepage to login
+    res.redirect('/')
+})
 // router.route('/:username').get(authenticateToken, getUser)
 
 export default router
