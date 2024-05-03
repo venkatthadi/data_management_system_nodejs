@@ -1,3 +1,4 @@
+import { validationResult } from 'express-validator';
 import { getAccounts, getAccount, createAccount, updateAccount, deleteAccount, searchAccount } from '../models/accountModel.js';
 
 export const getAccs = async (req, res) => {
@@ -45,19 +46,25 @@ export const getAcc = async (req, res) => {
 export const createAcc = async (req, res) => {
     try {    
         const { name } = req.body
-        const account = await createAccount(name)
-        if(account) { // if new account is created
-            res.status(201).json({
-                "response" : account,
-                "message" : "Account created successfully",
-                "flag" : true
+        const errors = validationResult(req)
+        if(!errors.isEmpty()){
+            res.json({
+                "response" : errors 
             })
         } else {
-            res.status(400).json({
-                "response" : "cannot create account"
-            })
+            const account = await createAccount(name)
+            if(account) { // if new account is created
+                res.status(201).json({
+                    "response" : account,
+                    "message" : "Account created successfully",
+                    "flag" : true
+                })
+            } else {
+                res.status(400).json({
+                    "response" : "cannot create account"
+                })
+            }
         }
-        
     } catch(err) {
         res.status(500).json({
             "message" : err.message
@@ -68,17 +75,24 @@ export const createAcc = async (req, res) => {
 export const updateAcc = async (req, res) => {
     try {    
         const id = req.params.id
-        const { name } = req.body
-        const account = await updateAccount(id, name)
-        if(!account) { // if there is no account on that id
-            res.status(406).json({
-                "message" : "cannot update account"
+        const errors = validationResult(req)
+        if(!errors.isEmpty()){
+            res.json({
+                "response" : errors 
             })
         } else {
-            res.status(200).json({
-                "response" : account,
-                "message" : "update successful"
-            })
+            const { name } = req.body
+            const account = await updateAccount(id, name)
+            if(!account) { // if there is no account on that id
+                res.status(406).json({
+                    "message" : "cannot update account"
+                })
+            } else {
+                res.status(200).json({
+                    "response" : account,
+                    "message" : "update successful"
+                })
+            }
         }
     } catch(err) {
         res.status(500).json({
