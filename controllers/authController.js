@@ -86,7 +86,9 @@ export const fetchAu = async (req, res) => {
             })
         }
     } catch {
-        res.status(500).send('2')
+        res.status(500).json({
+            "message" : "internal server error"
+        })
     }
 
 }
@@ -95,7 +97,7 @@ export async function authenticateToken (req, res, next) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
     if(token == null) {
-        return res.status(401).json({
+        return res.status(401).json({ // go back to login page
             "message" : "Not authorized"
         })
     }
