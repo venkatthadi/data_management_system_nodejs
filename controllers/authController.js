@@ -89,7 +89,7 @@ export async function authenticateToken (req, res, next) {
     const token = authHeader && authHeader.split(' ')[1]
     if(token == null) {
         return res.status(401).json({
-            "message" : "no token found"
+            "message" : "Not authorized"
         })
     }
 

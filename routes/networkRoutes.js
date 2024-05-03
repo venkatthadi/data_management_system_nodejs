@@ -1,9 +1,10 @@
 import express from 'express'
 import { getNets, getNet, createNet, updateNet, deleteNet } from '../controllers/networkController.js';
+import { authenticateToken } from '../controllers/authController.js';
 
 const router = express.Router()
 
-router.route("/").get(getNets).post(createNet)
-router.route("/:id").get(getNet).put(updateNet).delete(deleteNet)
+router.route("/").get(authenticateToken, getNets).post(authenticateToken, createNet)
+router.route("/:id").get(authenticateToken, getNet).put(authenticateToken, updateNet).delete(authenticateToken, deleteNet)
 
 export default router
