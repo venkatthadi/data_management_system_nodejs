@@ -1,3 +1,4 @@
+import { validationResult } from 'express-validator';
 import { getNetworks, getNetwork, createNetwork, updateNetwork, deleteNetwork, filterNetworks } from '../models/networkModel.js';
 
 export const getNets = async (req, res) => {
@@ -45,19 +46,25 @@ export const getNet = async (req, res) => {
 export const createNet = async (req, res) => {
     try {    
         const { name, account_id } = req.body
-        const network = await createNetwork(name, account_id)
-        if(network){
-            res.status(201).json({
-                "response" : network,
-                "message" : "Network created successfully",
-                "flag" : true
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) {
+            res.json({
+                "response" : errors
             })
         } else {
-            res.status(400).json({
-                "response" : "cannot create network"
-            })
+            const network = await createNetwork(name, account_id)
+            if(network){
+                res.status(201).json({
+                    "response" : network,
+                    "message" : "Network created successfully",
+                    "flag" : true
+                })
+            } else {
+                res.status(400).json({
+                    "response" : "cannot create network"
+                })
+            }
         }
-        
     } catch(err) {
         res.status(500).json({
             "message" : err.message
@@ -69,16 +76,23 @@ export const updateNet = async (req, res) => {
     try {    
         const id = req.params.id
         const { name, account_id } = req.body
-        const network = await updateNetwork(id, name, account_id)
-        if(!network){
-            res.status(406).json({
-                "message" : "cannot update network"
+        const errors = validationResult(req)
+        if(!errors.isEmpty()) {
+            res.json({
+                "response" : errors
             })
         } else {
-            res.status(200).json({
-                "response" : network,
-                "message" : "update successful"
-            })
+            const network = await updateNetwork(id, name, account_id)
+            if(!network){
+                res.status(406).json({
+                    "message" : "cannot update network"
+                })
+            } else {
+                res.status(200).json({
+                    "response" : network,
+                    "message" : "update successful"
+                })
+            }
         }
     } catch(err) {
         res.status(500).json({
