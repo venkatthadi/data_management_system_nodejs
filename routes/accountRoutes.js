@@ -1,6 +1,6 @@
 import express from 'express'
 import { check } from 'express-validator';
-import { getAccs, getAcc, createAcc, updateAcc, deleteAcc } from '../controllers/accountController.js';
+import { getAccs, getAcc, createAcc, updateAcc, deleteAcc, searchAccs } from '../controllers/accountController.js';
 import { authenticateToken } from '../controllers/authController.js';
 
 const router = express.Router()
@@ -14,5 +14,6 @@ router.route("/:id").get(authenticateToken, getAcc).put(
     check('name', "invalid name").notEmpty(),
     updateAcc
     ).delete(authenticateToken, deleteAcc)
+router.route("/search/:search").get(authenticateToken, searchAccs)
 
 export default router

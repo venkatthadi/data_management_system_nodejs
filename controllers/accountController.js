@@ -1,17 +1,39 @@
-import { validationResult } from 'express-validator';
-import { sequelize } from '../database.js';
+import { validationResult } from 'express-validator'
+import { sequelize } from '../database.js'
+import { Op } from 'sequelize'
 import Accounts from '../models/account.model.js'
+
+export const searchAccs = async (req, res) => {
+    try {
+        const search = req.params.search
+        sequelize.sync().then(() => {
+            Accounts.findAll({
+                where: { 
+                    name: { [Op.like]: `%${search}%` } 
+                }
+            }).then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
+    } catch {
+        res.status(500).json({
+            "message" : "cannot fetch accounts"
+        })
+    }
+}
 
 export const getAccs = async (req, res) => {
     try {
-        // const { search } = req.body
-        // let accs
-        // if(search) { // if there is anything to search
-        //     accs = await searchAccount(search)
-        // } else { // get all accounts from the database
-        //     accs = await getAccounts()
-        // }
-
         sequelize.sync().then(() => {
             Accounts.findAll().then(result => {
                 // console.log(result)
