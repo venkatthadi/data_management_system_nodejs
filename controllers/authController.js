@@ -75,7 +75,9 @@ export const fetchAu = async (req, res) => {
             // res.send('success')
             const u = { username: username }
 
-            const accessToken = jwt.sign(u, process.env.ACCESS_TOKEN)
+            const accessToken = jwt.sign(u, process.env.ACCESS_TOKEN, {
+                expiresIn: '5h'
+            })
             res.status(200).json({
                 "accessToken" : accessToken,
                 "message" : "authorized" 
