@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
 import { sequelize } from '../database.js';
-import Accounts from '../account.model.js'
+import Accounts from '../models/account.model.js'
 
 export const getAccs = async (req, res) => {
     try {
