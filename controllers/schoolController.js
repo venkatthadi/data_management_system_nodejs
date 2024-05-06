@@ -1,20 +1,89 @@
 import { validationResult } from 'express-validator';
-import { getSchools, getSchool, createSchool, updateSchool, deleteSchool, filterSchools } from '../models/schoolModel.js';
+import { sequelize } from '../database.js';
+import { Op } from 'sequelize';
+import Schools from '../models/school.model.js';
+
+export const searchSchs = async (req, res) => {
+    try {
+        const search = req.params.search
+
+        sequelize.sync().then(() => {
+            Schools.findAll({
+                where: { 
+                    name: { [Op.like]: `%${search}%` } 
+                }
+            }).then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                res.status(400).json({
+                    "response": error
+                })
+            });
+        
+        }).catch((error) => {
+            res.status(400).json({
+                "response": error
+            })
+        });
+    } catch {
+        res.status(500).json({
+            "message" : "cannot fetch Schools"
+        })
+    }
+}
+
+export const filterSchs = async (req, res) => {
+    try {
+        const filter = req.params.filter
+
+        sequelize.sync().then(() => {
+            Schools.findAll({
+                where: { 
+                    network_id: filter 
+                }
+            }).then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
+    } catch {
+        res.status(500).json({
+            "message" : "cannot fetch Schools"
+        })
+    }
+}
 
 export const getSchs = async (req, res) => {
     try {
-        const { search, network_filter } = req.body
-        let schs
-        if(search || network_filter) {
-            schs = await filterSchools(search, network_filter)
-        } else {
-            schs = await getSchools()
-        }
-        res.status(200).json({
-            "response" : schs,
-            "message" : "success",
-            "flag" : true
-        })
+        sequelize.sync().then(() => {
+            Schools.findAll().then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
     } catch {
         res.status(500).json({
             "message" : "cannot fetch schools"
@@ -24,18 +93,24 @@ export const getSchs = async (req, res) => {
 
 export const getSch = async (req, res) => {
     try {
-        const sch = await getSchool(req.params.id)
-        if(sch){    
-            res.status(200).json({
-                "response" : sch,
-                "message" : "success",
-                "flag" : true
-            })
-        } else {
-            res.status(400).json({
-                "message" : "cannot find school"
-            })
-        }
+        sequelize.sync().then(() => {
+            Schools.findOne({
+                where: {
+                    id : req.params.id
+                }
+            }).then(result => {
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
     } catch {
         res.status(500).json({
             "message" : "school not available"
@@ -52,18 +127,29 @@ export const createSch = async (req, res) => {
                 "response" : errors
             })
         } else {
-            const school = await createSchool(name, network_id)
-            if(school){
-                res.status(201).json({
-                    "response" : school,
-                    "message" : "School created successfully",
-                    "flag" : true
-                })
-            } else {
+            sequelize.sync().then(() => {
+                // console.log('Book table created successfully!');
+                Schools.create({
+                    name: name,
+                    network_id: network_id
+                }).then(result => {
+                    console.log(result)
+                    res.status(200).json({
+                        "response" : result,
+                        "message" : "School created successfully",
+                        "flag" : true
+                    })                
+                }).catch((error) => {
+                    res.status(400).json({
+                        "response": error
+                    })
+                });
+             
+            }).catch((error) => {
                 res.status(400).json({
-                    "response" : "cannot create school"
+                    "response": error
                 })
-            }
+            });
         }
     } catch(err) {
         res.status(500).json({
@@ -82,17 +168,20 @@ export const updateSch = async (req, res) => {
                 "response" : errors
             })
         } else {
-            const school = await updateSchool(id, name, network_id)
-            if(!school){
-                res.status(406).json({
-                    "message" : "cannot update school"
-                })
-            } else {
+            Schools.update(
+                { name: name, network_id: network_id },
+                { where: { id: id }}
+            ).then(result => {
                 res.status(200).json({
-                    "response" : school,
+                    "response" : result,
                     "message" : "update successful"
                 })
-            }
+            }).catch(err => {
+                res.status(406).json({
+                    "response" : err, 
+                    "message" : "cannot update account"
+                })
+            })
         }
     } catch(err) {
         res.status(500).json({
@@ -103,11 +192,18 @@ export const updateSch = async (req, res) => {
 
 export const deleteSch = async (req, res) => {
     try {    
-        const id = req.params.id
-        await deleteSchool(id)
-        res.status(204).json({
-            "message" : "School deleted successfully"
-        })
+        Schools.destroy({
+            where: {
+              id: req.params.id
+            }
+        }).then(() => {
+            // console.log("Successfully deleted record.")
+            res.status(204).json({
+                "message" : "School deleted successfully"
+            })
+        }).catch((error) => {
+            console.error('Failed to delete record : ', error);
+        });
     } catch {
         res.status(500).json({
             "message" : "internal server error"
