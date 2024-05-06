@@ -111,9 +111,9 @@ export const createAcc = async (req, res) => {
                     console.error('Failed to create a new record : ', error);
                 });
              
-             }).catch((error) => {
+            }).catch((error) => {
                 console.error('Unable to create table : ', error);
-             });
+            });
         }
     } catch(err) {
         res.status(500).json({
