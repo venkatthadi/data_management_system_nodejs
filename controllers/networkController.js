@@ -1,7 +1,67 @@
 import { validationResult } from 'express-validator';
 import { sequelize } from '../database.js';
-import { getNetworks, getNetwork, createNetwork, updateNetwork, deleteNetwork, filterNetworks } from '../models/networkModel.js';
+import { Op } from 'sequelize';
 import Networks from '../models/networks.model.js';
+
+export const searchNets = async (req, res) => {
+    try {
+        const search = req.params.search
+
+        sequelize.sync().then(() => {
+            Networks.findAll({
+                where: { 
+                    name: { [Op.like]: `%${search}%` } 
+                }
+            }).then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
+    } catch {
+        res.status(500).json({
+            "message" : "cannot fetch networks"
+        })
+    }
+}
+
+export const filterNets = async (req, res) => {
+    try {
+        const filter = req.params.filter
+
+        sequelize.sync().then(() => {
+            Networks.findAll({
+                where: { 
+                    account_id: filter 
+                }
+            }).then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
+    } catch {
+        res.status(500).json({
+            "message" : "cannot fetch networks"
+        })
+    }
+}
 
 export const getNets = async (req, res) => {
     try {
@@ -85,7 +145,7 @@ export const createNet = async (req, res) => {
                     console.log(result)
                     res.status(200).json({
                         "response" : result,
-                        "message" : "Account created successfully",
+                        "message" : "Network created successfully",
                         "flag" : true
                     })                
                 }).catch((error) => {
