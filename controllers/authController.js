@@ -4,19 +4,29 @@ import express from 'express'
 import dotenv from 'dotenv'
 dotenv.config()
 import { validationResult } from 'express-validator'
-import { getAuthUsers, createAuth, fetchAuth } from "../models/authModel.js"
+import { sequelize } from '../database.js'
+import AuthUsers from '../models/authuser.model.js'
 
 const app = express()
 app.use(express.json())
 
 export const getAuths = async (req, res) => {
     try {
-        const auths = await getAuthUsers(req.username)
-        res.status(200).json({
-            "response" : auths,
-            "message" : "success",
-            "flag" : true
-        })
+        sequelize.sync().then(() => {
+            AuthUsers.findAll().then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
     } catch {
         res.status(500).json({
             "message" : "internal server error"
@@ -41,18 +51,28 @@ export const createAu = async (req, res) => {
         } else {
             const hashedPassword = await bcrypt.hash(password, 10)
             console.log(hashedPassword)
-            const user = createAuth(username, hashedPassword)
-            if(user) {
-                res.status(201).json({
-                    "response" : user,
-                    "message" : "create successful",
-                    "flag" : true
-                })
-            } else {
+            sequelize.sync().then(() => {
+                AuthUsers.create({
+                    username: username,
+                    password: hashedPassword
+                }).then(result => {
+                    console.log(result)
+                    res.status(201).json({
+                        "response" : result,
+                        "message" : "Auth created successfully",
+                        "flag" : true
+                    })                
+                }).catch((error) => {
+                    res.status(400).json({
+                        "response": error
+                    })
+                });
+             
+            }).catch((error) => {
                 res.status(400).json({
-                    "message" : "cannot create user"
+                    "response": error
                 })
-            }
+            });
         }
     } catch {
         res.status(500).json({
@@ -64,35 +84,46 @@ export const createAu = async (req, res) => {
 
 export const fetchAu = async (req, res) => {
     const { username, password } = req.body
-    const user = await fetchAuth(username)
-    if(user == null) {
-        return res.status(400).json({
-            "message" : "user not found"
-        })
-    }
-    try {
-        if(await bcrypt.compare(password, user.password)) {
-            // res.send('success')
-            const u = { username: username }
-
-            const accessToken = jwt.sign(u, process.env.ACCESS_TOKEN, {
-                expiresIn: '5h'
+    try{
+        sequelize.sync().then(async () => {
+            const result = await AuthUsers.findOne({
+                where: { 
+                    username: username 
+                }
             })
-            res.status(200).json({
-                "accessToken" : accessToken,
-                "message" : "authorized" 
-            })
-        } else {
+            console.log(result)
+            if(result!=null){
+                if(await bcrypt.compare(password, result.dataValues.password)) {
+                    // res.send('success')
+                    const u = { username: username }
+        
+                    const accessToken = jwt.sign(u, process.env.ACCESS_TOKEN, {
+                        expiresIn: '5h'
+                    })
+                    res.status(200).json({
+                        "accessToken" : accessToken,
+                        "message" : "authorized" 
+                    })
+                } else {
+                    res.status(400).json({
+                        "message" : "incorrect password"
+                    })
+                }
+            } else {
+                res.status(400).json({
+                    "response": "user does not exist"
+                })
+            }
+        }).catch((error) => {
             res.status(400).json({
-                "message" : "incorrect password"
+                "response": error
             })
-        }
-    } catch {
-        res.status(500).json({
-            "message" : "internal server error"
+        });
+    } catch(err) {
+        res.status(400).json({
+            "response": err
         })
     }
-
 }
 
 export async function authenticateToken (req, res, next) {
