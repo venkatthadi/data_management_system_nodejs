@@ -1,22 +1,91 @@
 import { validationResult } from 'express-validator';
-import { getUsers, getUser, createUser, updateUser, deleteUser, searchUsers, filterUsers } from '../models/userModel.js';
+import { sequelize } from '../database.js';
+import { Op } from 'sequelize';
+import { Users } from '../models/index.js';
+
+export const searchUs = async (req, res) => {
+    try {
+        const search = req.params.search
+
+        sequelize.sync().then(() => {
+            Users.findAll({
+                where: { 
+                    name: { [Op.like]: `%${search}%` } 
+                }
+            }).then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                res.status(400).json({
+                    "response": error
+                })
+            });
+        
+        }).catch((error) => {
+            res.status(400).json({
+                "response": error
+            })
+        });
+    } catch {
+        res.status(500).json({
+            "message" : "cannot fetch users"
+        })
+    }
+}
+
+export const filterUs = async (req, res) => {
+    try {
+        const filter1 = req.params.filter1
+        const filter2 = req.params.filter2
+
+        sequelize.sync().then(() => {
+            Users.findAll({
+                where: { 
+                    schoolId: filter1,
+                    usertypeId: filter2
+                }
+            }).then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
+    } catch {
+        res.status(500).json({
+            "message" : "cannot fetch users"
+        })
+    }
+}
 
 export const getUs = async (req, res) => {
     try {
-        const { search, school_filter, usertype_filter } = req.body
-        let us
-        if(school_filter || usertype_filter) {
-            us = await filterUsers(search, school_filter, usertype_filter)
-        } else if(search) {
-            us = await searchUsers(search)
-        } else {
-            us = await getUsers()
-        }
-        res.status(200).json({
-            "response" : us,
-            "message" : "success",
-            "flag" : true
-        })
+        sequelize.sync().then(() => {
+            Users.findAll().then(result => {
+                // console.log(result)
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
     } catch {
         res.status(500).json({
             "message" : "cannot fetch users"
@@ -26,18 +95,24 @@ export const getUs = async (req, res) => {
 
 export const getU = async (req, res) => {
     try {
-        const u = await getUser(req.params.id)
-        if(u){    
-            res.status(200).json({
-                "response" : u,
-                "message" : "success",
-                "flag" : true
-            })
-        } else {
-            res.status(400).json({
-                "message" : "cannot find user"
-            })
-        }
+        sequelize.sync().then(() => {
+            Users.findOne({
+                where: {
+                    id : req.params.id
+                }
+            }).then(result => {
+                res.status(200).json({
+                    "response" : result,
+                    "message" : "success",
+                    "flag" : true
+                })
+            }).catch((error) => {
+                console.error('Failed to retrieve data : ', error);
+            });
+        
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
     } catch {
         res.status(500).json({
             "message" : "user not available"
@@ -47,25 +122,36 @@ export const getU = async (req, res) => {
 
 export const createU = async (req, res) => {
     try {    
-        const { name, school_id, usertype_id } = req.body
+        const { name, schoolId, usertypeId } = req.body
         const errors = validationResult(req)
         if(!errors.isEmpty()) {
             res.json({
                 "response" : errors
             })
         } else {
-            const User = await createUser(name, school_id, usertype_id)
-            if(User){
-                res.status(201).json({
-                    "response" : User,
-                    "message" : "User created successfully",
-                    "flag" : true
-                })
-            } else {
+            sequelize.sync().then(() => {
+                Users.create({
+                    name: name,
+                    schoolIdId: schoolId,
+                    usertypeId: usertypeId
+                }).then(result => {
+                    console.log(result)
+                    res.status(200).json({
+                        "response" : result,
+                        "message" : "User created successfully",
+                        "flag" : true
+                    })                
+                }).catch((error) => {
+                    res.status(400).json({
+                        "response": error
+                    })
+                });
+             
+            }).catch((error) => {
                 res.status(400).json({
-                    "response" : "cannot create user"
+                    "response": error
                 })
-            }
+            });
         }
     } catch(err) {
         res.status(500).json({
@@ -77,24 +163,27 @@ export const createU = async (req, res) => {
 export const updateU = async (req, res) => {
     try {    
         const id = req.params.id
-        const { name, school_id, usertype_id } = req.body
+        const { name, schoolId, usertypeId } = req.body
         const errors = validationResult(req)
         if(!errors.isEmpty()) {
             res.json({
                 "response" : errors
             })
         } else {
-            const User = await updateUser(id, name, school_id, usertype_id)
-            if(!User){
-                res.status(406).json({
-                    "message" : "cannot update user"
-                })
-            } else {
+            Users.update(
+                { name: name, schoolId: schoolId, usertypeId: usertypeId },
+                { where: { id: id }}
+            ).then(result => {
                 res.status(200).json({
-                    "response" : network,
+                    "response" : result,
                     "message" : "update successful"
                 })
-            }
+            }).catch(err => {
+                res.status(406).json({
+                    "response" : err, 
+                    "message" : "cannot update school"
+                })
+            })
         }
     } catch(err) {
         res.status(500).json({
@@ -105,11 +194,18 @@ export const updateU = async (req, res) => {
 
 export const deleteU = async (req, res) => {
     try {    
-        const id = req.params.id
-        await deleteUser(id)
-        res.status(204).json({
-            "message" : "Network deleted successfully"
-        })
+        Users.destroy({
+            where: {
+              id: req.params.id
+            }
+        }).then(() => {
+            // console.log("Successfully deleted record.")
+            res.status(204).json({
+                "message" : "User deleted successfully"
+            })
+        }).catch((error) => {
+            console.error('Failed to delete record : ', error);
+        });
     } catch {
         res.status(500).json({
             "message" : "internal server error"
