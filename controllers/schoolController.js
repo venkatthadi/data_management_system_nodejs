@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator';
 import { sequelize } from '../database.js';
 import { Op } from 'sequelize';
-import Schools from '../models/school.model.js';
+import { Schools } from '../models/index.js';
 
 export const searchSchs = async (req, res) => {
     try {
@@ -44,7 +44,7 @@ export const filterSchs = async (req, res) => {
         sequelize.sync().then(() => {
             Schools.findAll({
                 where: { 
-                    network_id: filter 
+                    networkId: filter 
                 }
             }).then(result => {
                 // console.log(result)
@@ -120,7 +120,7 @@ export const getSch = async (req, res) => {
 
 export const createSch = async (req, res) => {
     try {    
-        const { name, network_id } = req.body
+        const { name, networkId } = req.body
         const errors = validationResult(req)
         if(!errors.isEmpty()) {
             res.json({
@@ -131,7 +131,7 @@ export const createSch = async (req, res) => {
                 // console.log('Book table created successfully!');
                 Schools.create({
                     name: name,
-                    network_id: network_id
+                    networkId: networkId
                 }).then(result => {
                     console.log(result)
                     res.status(200).json({
@@ -161,7 +161,7 @@ export const createSch = async (req, res) => {
 export const updateSch = async (req, res) => {
     try {    
         const id = req.params.id
-        const { name, network_id } = req.body
+        const { name, networkId } = req.body
         const errors = validationResult(req)
         if(!errors.isEmpty()) {
             res.json({
@@ -169,7 +169,7 @@ export const updateSch = async (req, res) => {
             })
         } else {
             Schools.update(
-                { name: name, network_id: network_id },
+                { name: name, networkId: networkId },
                 { where: { id: id }}
             ).then(result => {
                 res.status(200).json({
@@ -179,7 +179,7 @@ export const updateSch = async (req, res) => {
             }).catch(err => {
                 res.status(406).json({
                     "response" : err, 
-                    "message" : "cannot update account"
+                    "message" : "cannot update school"
                 })
             })
         }

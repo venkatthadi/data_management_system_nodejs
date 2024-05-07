@@ -13,17 +13,7 @@ const Schools = sequelize.define("schools", {
     name: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    network_id: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        references: {
-            model: 'networks',
-            key: 'id'
-        },
-        onDelete: 'CASCADE'
     }
-
 });
 
 sequelize.sync().then(() => {

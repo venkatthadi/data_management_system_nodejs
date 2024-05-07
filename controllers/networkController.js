@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator';
 import { sequelize } from '../database.js';
 import { Op } from 'sequelize';
-import Networks from '../models/networks.model.js';
+import { Networks } from '../models/index.js';
 
 export const searchNets = async (req, res) => {
     try {
@@ -40,7 +40,7 @@ export const filterNets = async (req, res) => {
         sequelize.sync().then(() => {
             Networks.findAll({
                 where: { 
-                    account_id: filter 
+                    accountId: filter 
                 }
             }).then(result => {
                 // console.log(result)
@@ -129,7 +129,7 @@ export const getNet = async (req, res) => {
 
 export const createNet = async (req, res) => {
     try {    
-        const { name, account_id } = req.body
+        const { name, accountId } = req.body
         const errors = validationResult(req)
         if(!errors.isEmpty()) {
             res.json({
@@ -140,7 +140,7 @@ export const createNet = async (req, res) => {
                 // console.log('Book table created successfully!');
                 Networks.create({
                     name: name,
-                    account_id: account_id
+                    accountId: accountId
                 }).then(result => {
                     console.log(result)
                     res.status(200).json({
@@ -166,7 +166,7 @@ export const createNet = async (req, res) => {
 export const updateNet = async (req, res) => {
     try {    
         const id = req.params.id
-        const { name, account_id } = req.body
+        const { name, accountId } = req.body
         const errors = validationResult(req)
         if(!errors.isEmpty()) {
             res.json({
@@ -174,7 +174,7 @@ export const updateNet = async (req, res) => {
             })
         } else {
             Networks.update(
-                { name: name, account_id: account_id },
+                { name: name, accountId: accountId },
                 { where: { id: id }}
             ).then(result => {
                 res.status(200).json({
@@ -184,7 +184,7 @@ export const updateNet = async (req, res) => {
             }).catch(err => {
                 res.status(406).json({
                     "response" : err, 
-                    "message" : "cannot update account"
+                    "message" : "cannot update network"
                 })
             })
         }

@@ -1,5 +1,4 @@
 import express from 'express'
-import { Sequelize, DataTypes } from 'sequelize'
 // import dotnet from 'dotent'
 import accountRoutes from './routes/accountRoutes.js'
 import networkRoutes from './routes/networkRoutes.js'

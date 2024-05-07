@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator'
 import { sequelize } from '../database.js'
 import { Op } from 'sequelize'
-import Accounts from '../models/account.model.js'
+import { Accounts } from '../models/index.js'
 
 export const searchAccs = async (req, res) => {
     try {
@@ -77,6 +77,7 @@ export const getAcc = async (req, res) => {
                     id : req.params.id
                 }
             }).then(result => {
+                console.log(result)
                 res.status(200).json({
                     "response" : result,
                     "message" : "success",
