@@ -36,12 +36,18 @@ export const getAccs = async (req, res) => {
     try {
         sequelize.sync().then(() => {
             Accounts.findAll().then(result => {
-                // console.log(result)
-                res.status(200).json({
-                    "response" : result,
-                    "message" : "success",
-                    "flag" : true
-                })
+                console.log(result)
+                // res.status(200).json({
+                //     "response" : result,
+                //     "message" : "success",
+                //     "flag" : true
+                // })
+                // {
+                //     "Access-Control-Allow-Headers" : "Content-Type",
+                //     "Access-Control-Allow-Origin": "*",
+                //     "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+                // }
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "OPTIONS,POST,GET").json(result);
             }).catch((error) => {
                 console.error('Failed to retrieve data : ', error);
             });
@@ -100,6 +106,7 @@ export const getAcc = async (req, res) => {
 export const createAcc = async (req, res) => {
     try {    
         const { name } = req.body
+        console.log(name)
         const errors = validationResult(req)
         if(!errors.isEmpty()){
             res.json({
@@ -125,11 +132,7 @@ export const createAcc = async (req, res) => {
                     name: name
                 }).then(result => {
                     console.log(result)
-                    res.status(200).json({
-                        "response" : result,
-                        "message" : "Account created successfully",
-                        "flag" : true
-                    })                
+                    res.status(201).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "OPTIONS,POST,GET").json(result);                
                 }).catch((error) => {
                     console.error('Failed to create a new record : ', error);
                 });
