@@ -5,8 +5,7 @@ import { authenticateToken } from '../controllers/authController.js';
 
 const router = express.Router()
 
-router.route("/").get(authenticateToken, getAccs).post(
-    authenticateToken, 
+router.route("/").get(getAccs).post(
     check('name', "invalid name (not empty)").notEmpty(),
     createAcc)
 router.route("/:id").get(authenticateToken, getAcc).put(
