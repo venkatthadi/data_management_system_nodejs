@@ -47,7 +47,7 @@ export const getAccs = async (req, res) => {
                 //     "Access-Control-Allow-Origin": "*",
                 //     "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
                 // }
-                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "OPTIONS,POST,GET").json(result);
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
             }).catch((error) => {
                 console.error('Failed to retrieve data : ', error);
             });

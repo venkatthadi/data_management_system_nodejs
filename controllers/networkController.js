@@ -81,11 +81,12 @@ export const getNets = async (req, res) => {
         sequelize.sync().then(() => {
             Networks.findAll().then(result => {
                 // console.log(result)
-                res.status(200).json({
-                    "response" : result,
-                    "message" : "success",
-                    "flag" : true
-                })
+                // res.status(200).json({
+                //     "response" : result,
+                //     "message" : "success",
+                //     "flag" : true
+                // })
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
             }).catch((error) => {
                 console.error('Failed to retrieve data : ', error);
             });
@@ -108,11 +109,12 @@ export const getNet = async (req, res) => {
                     id : req.params.id
                 }
             }).then(result => {
-                res.status(200).json({
-                    "response" : result,
-                    "message" : "success",
-                    "flag" : true
-                })
+                // res.status(200).json({
+                //     "response" : result,
+                //     "message" : "success",
+                //     "flag" : true
+                // })
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
             }).catch((error) => {
                 console.error('Failed to retrieve data : ', error);
             });
@@ -142,12 +144,13 @@ export const createNet = async (req, res) => {
                     name: name,
                     accountId: accountId
                 }).then(result => {
-                    console.log(result)
-                    res.status(200).json({
-                        "response" : result,
-                        "message" : "Network created successfully",
-                        "flag" : true
-                    })                
+                    // console.log(result)
+                    // res.status(200).json({
+                    //     "response" : result,
+                    //     "message" : "Network created successfully",
+                    //     "flag" : true
+                    // })    
+                    res.status(201).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);            
                 }).catch((error) => {
                     console.error('Failed to create a new record : ', error);
                 });
@@ -177,10 +180,11 @@ export const updateNet = async (req, res) => {
                 { name: name, accountId: accountId },
                 { where: { id: id }}
             ).then(result => {
-                res.status(200).json({
-                    "response" : result,
-                    "message" : "update successful"
-                })
+                // res.status(200).json({
+                //     "response" : result,
+                //     "message" : "update successful"
+                // })
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
             }).catch(err => {
                 res.status(406).json({
                     "response" : err, 
@@ -203,9 +207,10 @@ export const deleteNet = async (req, res) => {
             }
         }).then(() => {
             // console.log("Successfully deleted record.")
-            res.status(204).json({
-                "message" : "Account deleted successfully"
-            })
+            // res.status(204).json({
+            //     "message" : "Account deleted successfully"
+            // })
+            res.status(204).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
         }).catch((error) => {
             console.error('Failed to delete record : ', error);
         });

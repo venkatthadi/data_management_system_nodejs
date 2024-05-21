@@ -64,13 +64,13 @@ export const createAu = async (req, res) => {
                     })                
                 }).catch((error) => {
                     res.status(400).json({
-                        "response": error
+                        "message": error
                     })
                 });
              
             }).catch((error) => {
                 res.status(400).json({
-                    "response": error
+                    "message": error
                 })
             });
         }
@@ -111,17 +111,17 @@ export const fetchAu = async (req, res) => {
                 }
             } else {
                 res.status(400).json({
-                    "response": "user does not exist"
+                    "message": "user does not exist"
                 })
             }
         }).catch((error) => {
             res.status(400).json({
-                "response": error
+                "message": error
             })
         });
     } catch(err) {
         res.status(400).json({
-            "response": err
+            "message": err
         })
     }
 }
@@ -131,7 +131,7 @@ export async function authenticateToken (req, res, next) {
     const token = authHeader && authHeader.split(' ')[1]
     if(token == null) {
         return res.status(401).json({ // go back to login page
-            "message" : "Not authorized"
+            "message" : "No token"
         })
     }
 

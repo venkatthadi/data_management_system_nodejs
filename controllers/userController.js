@@ -74,11 +74,12 @@ export const getUs = async (req, res) => {
         sequelize.sync().then(() => {
             Users.findAll().then(result => {
                 // console.log(result)
-                res.status(200).json({
-                    "response" : result,
-                    "message" : "success",
-                    "flag" : true
-                })
+                // res.status(200).json({
+                //     "response" : result,
+                //     "message" : "success",
+                //     "flag" : true
+                // })
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
             }).catch((error) => {
                 console.error('Failed to retrieve data : ', error);
             });
@@ -101,11 +102,12 @@ export const getU = async (req, res) => {
                     id : req.params.id
                 }
             }).then(result => {
-                res.status(200).json({
-                    "response" : result,
-                    "message" : "success",
-                    "flag" : true
-                })
+                // res.status(200).json({
+                //     "response" : result,
+                //     "message" : "success",
+                //     "flag" : true
+                // })
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
             }).catch((error) => {
                 console.error('Failed to retrieve data : ', error);
             });
@@ -132,15 +134,16 @@ export const createU = async (req, res) => {
             sequelize.sync().then(() => {
                 Users.create({
                     name: name,
-                    schoolIdId: schoolId,
+                    schoolId: schoolId,
                     usertypeId: usertypeId
                 }).then(result => {
-                    console.log(result)
-                    res.status(200).json({
-                        "response" : result,
-                        "message" : "User created successfully",
-                        "flag" : true
-                    })                
+                    // console.log(result)
+                    // res.status(200).json({
+                    //     "response" : result,
+                    //     "message" : "User created successfully",
+                    //     "flag" : true
+                    // }) 
+                    res.status(201).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);               
                 }).catch((error) => {
                     res.status(400).json({
                         "response": error
@@ -174,10 +177,11 @@ export const updateU = async (req, res) => {
                 { name: name, schoolId: schoolId, usertypeId: usertypeId },
                 { where: { id: id }}
             ).then(result => {
-                res.status(200).json({
-                    "response" : result,
-                    "message" : "update successful"
-                })
+                // res.status(200).json({
+                //     "response" : result,
+                //     "message" : "update successful"
+                // })
+                res.status(200).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
             }).catch(err => {
                 res.status(406).json({
                     "response" : err, 
@@ -199,10 +203,11 @@ export const deleteU = async (req, res) => {
               id: req.params.id
             }
         }).then(() => {
-            // console.log("Successfully deleted record.")
-            res.status(204).json({
-                "message" : "User deleted successfully"
-            })
+            console.log("Successfully deleted record.", result);
+            // res.status(204).json({
+            //     "message" : "User deleted successfully"
+            // })
+            res.status(204).setHeader("Access-Control-Allow-Headers", "Content-Type").setHeader("Access-Control-Allow-Origin", "*").setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE").json(result);
         }).catch((error) => {
             console.error('Failed to delete record : ', error);
         });
