@@ -5,7 +5,7 @@ import { getAuths, createAu, fetchAu, authenticateToken } from "../controllers/a
 const router = express.Router()
 router.use(express.json())
 
-router.route('/').get(authenticateToken, getAuths).post(
+router.route('/').post(
     check('username', "invalid username").notEmpty(), 
     check('password', "invalid password (length - min 4 characters)").isLength({min: 4}), 
     createAu)
