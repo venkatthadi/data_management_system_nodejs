@@ -1,6 +1,5 @@
 import express from 'express'
 import cors from 'cors'
-// import dotnet from 'dotent'
 import accountRoutes from './routes/accountRoutes.js'
 import networkRoutes from './routes/networkRoutes.js'
 import schoolRoutes from './routes/schoolRoutes.js'
